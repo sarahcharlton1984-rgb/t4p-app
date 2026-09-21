@@ -4,31 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Director's Position | Tax 4 Pros</title>
-<meta name="description" content="Your numbers, the tax they actually attract this year, on a sale and on death, and which of the seven levers are still open to you. Built on published 2026/27 rates.">
+<meta name="description" content="Work out what your company structure is really costing you. Free remuneration calculator, then the planning stages that move the number. Built on published 2026/27 rates.">
 <meta property="og:title" content="The Director's Position">
-<meta property="og:description" content="What your company structure is really costing you, stage by stage, on 2026/27 rates.">
+<meta property="og:description" content="What your company structure is really costing you, on 2026/27 rates.">
 <meta property="og:type" content="website">
 <meta name="robots" content="index,follow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231A1F2E%22/><text y=%22.9em%22 x=%22.5em%22 text-anchor=%22middle%22 font-size=%2270%22>&#128208;</text></svg>">
-<style>html{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
-/* email gate on the detailed stages */
-.gate{background:var(--surface); border:1px solid var(--accent-line); border-radius:3px; padding:26px 24px}
-.gate h2{font-size:12px; font-family:"JetBrains Mono",monospace; letter-spacing:.15em;
-  text-transform:uppercase; color:var(--accent); font-weight:500; margin-bottom:14px}
-.gate h3{font-size:clamp(20px,3vw,26px); font-weight:700; letter-spacing:-.015em; margin-bottom:10px}
-.gate p{color:var(--ink-dim); max-width:60ch; margin:0 0 8px; font-size:14.5px}
-.gate form{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; align-items:flex-start}
-.gate input[type=text],.gate input[type=email]{flex:1 1 190px; text-align:left;
-  font-family:Inter,sans-serif; font-size:14px; padding:10px 12px}
-.gate button{background:var(--accent); color:var(--ground); border:0; border-radius:2px;
-  font-family:Inter,sans-serif; font-weight:600; font-size:14px; padding:11px 22px; cursor:pointer; flex:0 0 auto}
-.gate button:hover{background:var(--accent-soft)}
-.gate .err{color:var(--crit); font-size:13px; margin-top:8px; display:none}
-.gate .small{font-size:12.5px; color:var(--ink-faint); margin-top:12px; max-width:60ch}
-.locked{display:flex; flex-wrap:wrap; gap:7px; margin-top:16px}
-.locked span{border:1px solid var(--line); color:var(--ink-faint); border-radius:2px;
-  padding:5px 9px; font-size:12px}
-</style>
+<style>html{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <style>
 :root{
@@ -187,6 +169,109 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid 
   text-transform:uppercase; color:var(--ink-faint); margin:22px 0 10px}
 .sub:first-child{margin-top:0}
 
+/* ---------- app shell ---------- */
+#app{display:grid; grid-template-columns:268px 1fr; min-height:100vh; align-items:stretch}
+@media (max-width:900px){#app{grid-template-columns:1fr}}
+.side{background:var(--surface); border-right:1px solid var(--line); padding:18px 14px 14px;
+  display:flex; flex-direction:column; gap:14px; position:sticky; top:0; height:100vh; overflow-y:auto}
+@media (max-width:900px){.side{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line)}}
+.brandrow{display:flex; align-items:center; gap:10px; padding:0 6px}
+.brandmark{background:var(--accent); color:var(--ground); font-family:"JetBrains Mono",monospace;
+  font-size:11px; font-weight:600; letter-spacing:.06em; padding:5px 7px; border-radius:2px}
+.brandname{font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:14px; letter-spacing:-.01em}
+
+.profilecard{background:var(--ground); border:1px solid var(--line); border-radius:3px; padding:12px 13px}
+.profilecard .who{font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:14.5px}
+.profilecard .sub{font-size:12px; color:var(--ink-faint); margin-top:2px}
+.profilecard .big{font-family:"JetBrains Mono",monospace; font-size:19px; color:var(--crit);
+  font-variant-numeric:tabular-nums; margin-top:9px}
+.profilecard .cap{font-size:11.5px; color:var(--ink-dim)}
+
+.side nav{display:flex; flex-direction:column; gap:3px; flex:1 1 auto}
+.navgroup{font-family:"JetBrains Mono",monospace; font-size:9.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-faint); margin:14px 6px 5px; display:flex;
+  justify-content:space-between; align-items:baseline; gap:8px}
+.navgroup b{color:var(--accent); font-weight:500}
+.side nav button{display:flex; align-items:center; gap:9px; width:100%; text-align:left;
+  background:transparent; border:0; border-radius:3px; color:var(--ink-dim);
+  font-family:Inter,sans-serif; font-size:13.5px; padding:8px 10px; cursor:pointer}
+.side nav button:hover{background:var(--surface-2); color:var(--ink)}
+.side nav button[aria-current="true"]{background:var(--surface-2); color:var(--ink); font-weight:600;
+  box-shadow:inset 2px 0 0 var(--accent)}
+.side nav button .lk{margin-left:auto; font-size:11px; color:var(--ink-faint)}
+.side nav button.locked{color:var(--ink-faint)}
+.sidefoot{border-top:1px solid var(--line-soft); padding-top:10px}
+.ghost{background:transparent; border:1px solid var(--line); color:var(--ink-dim); border-radius:2px;
+  font-family:Inter,sans-serif; font-size:12.5px; padding:7px 12px; cursor:pointer}
+.ghost:hover{color:var(--ink); border-color:var(--accent-line)}
+
+.mainwrap{display:flex; flex-direction:column; min-width:0}
+.topbar{display:flex; justify-content:space-between; align-items:flex-end; gap:16px;
+  padding:22px 26px 16px; border-bottom:1px solid var(--line); position:sticky; top:0;
+  background:var(--ground); z-index:5}
+@media (max-width:900px){.topbar{position:static}}
+.crumb{font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 5px}
+.topbar h1{font-size:clamp(20px,3vw,27px); font-weight:700; letter-spacing:-.02em}
+.numbtn{background:var(--surface); border:1px solid var(--line); color:var(--ink);
+  font-family:Inter,sans-serif; font-size:13px; font-weight:500; padding:9px 15px;
+  border-radius:2px; cursor:pointer; flex:0 0 auto}
+.numbtn:hover{border-color:var(--accent)}
+.view{padding:22px 26px 34px; display:flex; flex-direction:column; gap:20px; min-width:0}
+@media (max-width:620px){.topbar,.view{padding-inline:16px}}
+.appfoot{margin-top:auto; padding:18px 26px 30px; border-top:1px solid var(--line);
+  color:var(--ink-faint); font-size:12px; max-width:88ch}
+.appfoot p{margin:0 0 7px}
+.appfoot strong{color:var(--ink-dim)}
+
+/* numbers drawer */
+.drawerbg{position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:20}
+.drawer{position:fixed; top:0; right:0; bottom:0; width:min(390px,92vw); z-index:21;
+  background:var(--surface); border-left:1px solid var(--line); overflow-y:auto; padding:0 18px 26px}
+.drawerhead{display:flex; justify-content:space-between; align-items:center; gap:12px;
+  padding:16px 0 12px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--surface)}
+.drawerhead h2{font-size:15px; font-weight:600}
+.drawer .panel{background:transparent; border:0; padding:0; position:static; max-height:none}
+
+/* dashboard */
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px}
+.tile{background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:16px 17px}
+.tile .k{font-family:"JetBrains Mono",monospace; font-size:10px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-faint)}
+.tile .v{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:clamp(22px,3.4vw,30px);
+  letter-spacing:-.02em; font-variant-numeric:tabular-nums; margin-top:7px; line-height:1.05}
+.tile .n{font-size:12px; color:var(--ink-dim); margin-top:6px}
+.tile.crit .v{color:var(--crit)}
+
+/* locked stage */
+.lockwrap{background:var(--surface); border:1px solid var(--accent-line); border-radius:3px; padding:26px 24px}
+.lockwrap .eyebrow{margin-bottom:8px}
+.lockwrap h2{font-size:clamp(20px,3vw,26px); font-weight:700; letter-spacing:-.015em; margin-bottom:10px}
+.lockwrap .stake{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:clamp(28px,5vw,40px);
+  color:var(--crit); letter-spacing:-.025em; font-variant-numeric:tabular-nums; margin:16px 0 4px}
+.lockwrap .stakecap{font-size:13px; color:var(--ink-dim); max-width:56ch}
+.lockwrap ul{margin:18px 0 0; padding-left:18px; color:var(--ink-dim); font-size:13.5px; max-width:62ch}
+.lockwrap li{margin-bottom:6px}
+.pricerow{display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:22px}
+.price{font-family:"JetBrains Mono",monospace; font-size:15px; color:var(--accent)}
+.lockwrap .small{font-size:12px; color:var(--ink-faint); margin-top:12px; max-width:62ch}
+
+/* onboarding */
+.onboard{position:fixed; inset:0; background:var(--ground); z-index:40; overflow-y:auto;
+  display:flex; align-items:center; justify-content:center; padding:24px 16px}
+.onboardcard{background:var(--surface); border:1px solid var(--line); border-radius:4px;
+  padding:30px 28px; width:min(520px,100%)}
+.onboardcard h2{font-size:clamp(21px,3.4vw,28px); font-weight:700; letter-spacing:-.02em; margin-bottom:10px}
+.obintro{color:var(--ink-dim); font-size:14.5px; margin:0 0 20px; max-width:52ch}
+.obbody{display:flex; flex-direction:column; gap:12px}
+.obbody .field{margin-top:0}
+.obbody input[type=text],.obbody input[type=email]{text-align:left; font-family:Inter,sans-serif; font-size:14px; padding:9px 11px}
+.obnav{display:flex; gap:10px; justify-content:flex-end; margin-top:22px}
+.obdots{display:flex; gap:6px; justify-content:center; margin-top:18px}
+.obdots i{width:6px; height:6px; border-radius:50%; background:var(--line); display:block}
+.obdots i.on{background:var(--accent)}
+.oberr{color:var(--crit); font-size:13px; margin:0}
+
 /* the seven levers, ranked */
 .lever{display:grid; grid-template-columns:auto 1fr auto; gap:3px 14px; align-items:baseline;
   padding:15px 0; border-top:1px solid var(--line-soft)}
@@ -223,16 +308,70 @@ footer strong{color:var(--ink-dim); font-weight:600}
 
 </head>
 <body>
-<div class="wrap">
-<header class="masthead">
-  <p class="eyebrow">Tax 4 Pros</p>
-  <h1>The Director's Position</h1>
-  <p class="standfirst">Every stage of a company director's journey, what it costs you, which reliefs are open, and what happens if you act against what happens if you don't.</p>
-  <p class="scope">An estimate built from published 2026/27 rates, not tax advice, and it can only work with what you tell it. It assumes England, Wales or Northern Ireland, one trading company and a straightforward estate. The figures loaded are an example. Change them to yours.</p>
-  <nav id="nav" aria-label="Stages"></nav>
-</header>
+<script>
+window.dpCapture = function (r, profile) {
+  if (!profile || !profile.email) return;
+  try {
+    fetch("https://services.leadconnectorhq.com/hooks/6GPl4TryP7F4DBJBSJMc/webhook-trigger/a93bef9e-9720-4d64-a05c-4d29a63ab679", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: profile.email,
+        first_name: profile.name || "",
+        source: "t4p-directors-position",
+        company_profit: String(Math.round(r.profitBefore)),
+        turnover: String(Math.round(r.turnover)),
+        total_tax_this_year: String(Math.round(r.totalTax)),
+        effective_rate: (r.effective * 100).toFixed(1) + "%",
+        take_home: String(Math.round(Math.max(0, r.inHand))),
+        cgt_on_sale: String(Math.round(r.cgt)),
+        iht_exposure: String(Math.round(r.iht)),
+        companies_controlled: String(r.assoc),
+        selling: r.sellIn === 0 ? "no plans" : r.sellIn === 2 ? "within 2 years"
+               : r.sellIn === 5 ? "2 to 5 years" : "further out",
+        leaving: r.leave === 0 ? "not considering" : r.leave === 1 ? "thinking about it" : "within 2 years",
+        vat_registered: r.vatReg ? "yes" : "no",
+        ir35_regime: r.psc ? ("chapter " + r.chapter) : "not applicable"
+      })
+    }).catch(function () {});
+  } catch (err) {}
+};
+</script>
+<div id="app">
+  <aside class="side">
+    <div class="brandrow">
+      <span class="brandmark">T4P</span>
+      <span class="brandname">The Director's Position</span>
+    </div>
+    <div class="profilecard" id="profilecard"></div>
+    <nav id="nav" aria-label="Sections"></nav>
+    <div class="sidefoot">
+      <button type="button" class="ghost" id="resetBtn">Start again</button>
+    </div>
+  </aside>
 
-<div class="shell">
+  <div class="mainwrap">
+    <header class="topbar">
+      <div>
+        <p class="crumb" id="crumb">Your position</p>
+        <h1 id="viewtitle">Your position</h1>
+      </div>
+      <button type="button" class="numbtn" id="numbtn">Your numbers</button>
+    </header>
+    <main class="view" id="stage"></main>
+    <footer class="appfoot">
+      <p><strong>Where the numbers come from.</strong> Published 2026/27 rates and thresholds from HMRC and legislation, each one checked against a dated source before it went on screen. Every rate here changes at a Budget. The next is 28 October 2026.</p>
+      <p><strong>What this is not.</strong> An estimate on the figures you entered, not advice on your affairs, and it can only see what you have told it. It does not know your share classes, your loan account history or your shareholders' agreement. Sarah Charlton is a tax strategist and the founder of Tax 4 Pros.</p>
+    </footer>
+  </div>
+</div>
+
+<div class="drawerbg" id="drawerbg" hidden></div>
+<div class="drawer" id="drawer" hidden>
+  <div class="drawerhead">
+    <h2>Your numbers</h2>
+    <button type="button" class="ghost" id="drawerclose">Done</button>
+  </div>
   <form class="panel" id="inputs" autocomplete="off">
     <fieldset>
       <legend>The company</legend>
@@ -334,14 +473,20 @@ footer strong{color:var(--ink-dim); font-weight:600}
       <div class="field"><label for="gifted">Gifted away in the last 7 years</label><div class="money"><input type="number" id="gifted" value="0" step="10000" min="0"></div></div>
     </fieldset>
   </form>
-
-  <main class="report" id="stage"></main>
 </div>
 
-<footer>
-  <p><strong>Where the numbers come from.</strong> 2026/27 rates and thresholds as published by HMRC: corporation tax 19% to 25% with marginal relief, dividend tax 10.75% / 35.75% / 39.35%, employee NI 8% then 2%, employer NI 15% above a &pound;5,000 threshold, CGT 18% / 24% with Business Asset Disposal Relief at 18% on the first &pound;1m, IHT 40% above a &pound;325,000 nil-rate band and a &pound;175,000 residence nil-rate band that tapers away above a &pound;2m estate. Combined agricultural and business property relief is capped at &pound;2.5m per person from 6 April 2026, transferable between spouses. Unused pensions count in the estate from 6 April 2027, as legislated in Finance Act 2026.</p>
-  <p><strong>What this is not.</strong> An estimate on the figures you typed, not advice on your affairs, and it can only see what you have entered. It does not know your share classes, your loan account history, your spouse's estate or your shareholders' agreement. Business Property Relief in particular is a rounded judgement on full evidence, not something any tool can settle. Sarah Charlton is a tax strategist and the founder of Tax 4 Pros. Rates change at the Budget on 28 October 2026.</p>
-</footer>
+<div class="onboard" id="onboard" hidden>
+  <div class="onboardcard">
+    <p class="eyebrow">Tax 4 Pros</p>
+    <h2 id="obtitle">What is your company structure really costing you?</h2>
+    <p class="obintro" id="obintro">Three short steps and you will see your position for this year. Free, and it stays on this device.</p>
+    <div class="obbody" id="obbody"></div>
+    <div class="obnav">
+      <button type="button" class="ghost" id="obback" hidden>Back</button>
+      <button type="button" class="cta" id="obnext">Start</button>
+    </div>
+    <div class="obdots" id="obdots"></div>
+  </div>
 </div>
 
 <script>
@@ -1704,90 +1849,125 @@ footer strong{color:var(--ink-dim); font-weight:600}
   ];
 
   /* ---------- shell ---------- */
-  var current = "position";
-
-  /* ---------- email gate ----------
-     Your position is free and always visible. The stage-by-stage detail asks for
-     a name and an email first. Fire-and-forget: a network failure must never cost
-     the visitor their report. */
-  var UNLOCKED = false;
-  try { UNLOCKED = localStorage.getItem("dp.unlocked") === "1"; } catch (e) {}
-  var WEBHOOK = "https://services.leadconnectorhq.com/hooks/6GPl4TryP7F4DBJBSJMc/webhook-trigger/a93bef9e-9720-4d64-a05c-4d29a63ab679";
-
-  function capture(r, name, email){
-    try {
-      fetch(WEBHOOK, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email,
-          first_name: name,
-          source: "t4p-directors-position",
-          company_profit: String(Math.round(r.profitBefore)),
-          total_tax_this_year: String(Math.round(r.totalTax)),
-          effective_rate: pct(r.effective),
-          cgt_on_sale: String(Math.round(r.cgt)),
-          iht_exposure: String(Math.round(r.iht)),
-          companies_controlled: String(r.assoc),
-          selling: r.sellIn === 0 ? "no plans" : r.sellIn === 2 ? "within 2 years"
-                 : r.sellIn === 5 ? "2 to 5 years" : "further out",
-          leaving: r.leave === 0 ? "not considering" : r.leave === 1 ? "thinking about it" : "within 2 years",
-          vat_registered: r.vatReg ? "yes" : "no",
-          ir35_regime: r.psc ? ("chapter " + r.chapter) : "not applicable"
-        })
-      }).catch(function(){});
-    } catch (err) {}
+  /* ---------- tiers ----------
+     Free is the remuneration calculator and the position it produces. The paid
+     levels group stages by the KIND of planning they are, because that is how a
+     director actually arrives: this year first, structure once the company has
+     grown, the exit when there is something to sell or pass on. */
+  var TIERS = [
+    { key:"free",   name:"Your position",  price:"Free",
+      stages:["position","pay","next"], covers:[] },
+    { key:"year",   name:"This year",      price:"£29 a month",
+      stages:["pension","cars","family","vat","filing","accounts"],
+      covers:["What your pension and your car actually cost, both layers",
+              "Splitting income with a spouse, and where the settlements rules bite",
+              "VAT registration, the two tests, and whether the Flat Rate Scheme pays",
+              "What the public register shows about you, and what changes in 2028"] },
+    { key:"struct", name:"Your structure", price:"£49 a month",
+      stages:["keep","capital","property","ir35"],
+      covers:["Retained cash, and the relief it quietly puts at risk",
+              "What you can write off, and what comes back when you sell it",
+              "Property held personally against through a company, fully costed",
+              "Which IR35 regime you are in, and who carries the liability"] },
+    { key:"exit",   name:"The exit",       price:"£79 a month",
+      stages:["sell","leave","pass","trusts"],
+      covers:["Selling: the relief, the four-part test and the two-year clock",
+              "Leaving: the day counts, the ties and the tail that follows you",
+              "Passing it on: the estate, the allowances and the 2027 pension change",
+              "Trusts: the three charges, and when they are nil"] }
+  ];
+  function tierOf(id){
+    for (var i = 0; i < TIERS.length; i++) if (TIERS[i].stages.indexOf(id) >= 0) return TIERS[i];
+    return TIERS[0];
   }
 
-  function gateBlock(r){
-    var wrap = h("section", {class:"gate"},
-      h("h2", null, "The rest of your report"),
-      h("h3", null, "Sixteen more stages, on your numbers"),
-      h("p", null, "You have seen the headline. The detail is where the money is: what your pay structure costs, "
-        + "which reliefs are open, what a sale or a move would trigger, and what happens if you act against what happens if you don't."),
-      h("p", null, "No charge. One email, and it stays unlocked on this device."));
+  /* ---------- profile and entitlements ---------- */
+  var PROFILE = null, ENT = { free:true };
+  try {
+    PROFILE = JSON.parse(localStorage.getItem("dp.profile") || "null");
+    ENT = JSON.parse(localStorage.getItem("dp.ent") || '{"free":true}');
+  } catch (e) {}
+  function saveProfile(){
+    try {
+      localStorage.setItem("dp.profile", JSON.stringify(PROFILE));
+      localStorage.setItem("dp.ent", JSON.stringify(ENT));
+    } catch (e) {}
+  }
+  function unlocked(id){ return !!ENT[tierOf(id).key]; }
 
-    var chips = h("div", {class:"locked"});
-    STAGES.forEach(function(s){
-      if (s.id !== "position" && s.id !== "next") chips.appendChild(h("span", null, s.label));
+  var current = "position";
+
+  /* ---------- sidebar ---------- */
+  function renderProfileCard(r){
+    var box = $("profilecard");
+    box.textContent = "";
+    box.appendChild(h("div", {class:"who"}, (PROFILE && PROFILE.name) ? PROFILE.name : "Your position"));
+    box.appendChild(h("div", {class:"sub"},
+      gbp(r.profitBefore) + " profit" + (r.assoc > 1 ? " · " + r.assoc + " companies" : "")));
+    box.appendChild(h("div", {class:"big mono"}, gbp(r.totalTax)));
+    box.appendChild(h("div", {class:"cap"}, "tax this year, every layer"));
+  }
+
+  function renderNav(){
+    var nav = $("nav");
+    nav.textContent = "";
+    TIERS.forEach(function(t){
+      var head = h("div", {class:"navgroup"}, t.name);
+      if (t.key !== "free") head.appendChild(h("b", null, ENT[t.key] ? "Unlocked" : t.price));
+      nav.appendChild(head);
+      t.stages.forEach(function(id){
+        var st = STAGES.filter(function(x){ return x.id === id; })[0];
+        if (!st) return;
+        var open = !!ENT[t.key];
+        var b = h("button", {type:"button", "class":open ? "" : "locked",
+          "aria-current": st.id === current ? "true" : "false"}, st.label);
+        if (!open) b.appendChild(h("span", {"class":"lk"}, "· locked"));
+        b.addEventListener("click", function(){
+          current = st.id; run(); window.scrollTo({top:0, behavior:"smooth"});
+        });
+        nav.appendChild(b);
+      });
     });
-    wrap.appendChild(chips);
+  }
 
-    var nameI = h("input", {type:"text", id:"gate-name", placeholder:"First name", autocomplete:"given-name"});
-    var mailI = h("input", {type:"email", id:"gate-email", placeholder:"Email address", autocomplete:"email"});
-    var btn = h("button", {type:"submit"}, "Unlock the full report");
-    var err = h("p", {class:"err", id:"gate-err"}, "That email address does not look right.");
-    var form = h("form", {id:"gate-form", novalidate:"novalidate"}, nameI, mailI, btn);
-    wrap.appendChild(form);
-    wrap.appendChild(err);
-    wrap.appendChild(h("p", {class:"small"},
-      "Tax 4 Pros will email you about your position and how to act on it. Unsubscribe in one click, any time. "
-      + "Your figures are used to answer you properly and are not sold to anyone."));
-
-    form.addEventListener("submit", function(ev){
-      ev.preventDefault();
-      var email = mailI.value.trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.style.display = "block"; return; }
-      err.style.display = "none";
-      capture(r, nameI.value.trim(), email);
-      UNLOCKED = true;
-      try { localStorage.setItem("dp.unlocked", "1"); } catch (e) {}
-      run();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  /* ---------- the locked view ----------
+     Shows what the level covers AND what is at stake on this director's own
+     numbers. A lock that cannot say why it is worth opening is just a wall. */
+  function lockView(r, t){
+    var stake = 0, cap = "";
+    if (t.key === "year"){
+      stake = r.totalTax;
+      cap = "is what this year costs you across corporation tax, National Insurance, income tax and dividend tax. These are the stages that move it.";
+    } else if (t.key === "struct"){
+      stake = r.cash + r.coinv + r.capex;
+      cap = "sits inside the company as cash, investments and equipment. These stages are about what that does to your reliefs, and what you can write off against it.";
+    } else {
+      stake = r.cgt + r.iht;
+      cap = "is what a sale and your estate are currently heading into. These stages are the levers that move it, and most of them need years of notice.";
+    }
+    var wrap = h("section", {"class":"lockwrap"},
+      h("p", {"class":"eyebrow"}, t.name + " · locked"),
+      h("h2", null, "On your numbers, this level is about"),
+      h("div", {"class":"stake mono"}, gbp(stake)),
+      h("p", {"class":"stakecap"}, cap));
+    var ul = h("ul");
+    t.covers.forEach(function(c){ ul.appendChild(h("li", null, c)); });
+    wrap.appendChild(ul);
+    var btn = h("button", {type:"button", "class":"cta"}, "Unlock " + t.name);
+    var note = h("p", {"class":"small"},
+      "Payments are not switched on yet. This is the working app, not the shop.");
+    btn.addEventListener("click", function(){
+      note.textContent = "In the live app this takes a card and unlocks the level straight away.";
     });
+    wrap.appendChild(h("div", {"class":"pricerow"}, btn, h("span", {"class":"price"}, t.price)));
+    wrap.appendChild(note);
     return wrap;
   }
 
-
-  function renderNav(r){
-    var nav = $("nav");
-    nav.textContent = "";
-    STAGES.forEach(function(s, i){
-      var b = h("button", {type:"button", "aria-current": s.id === current ? "true" : "false"},
-        h("i", null, String(i + 1).padStart(2, "0")), s.label);
-      b.addEventListener("click", function(){ current = s.id; run(); window.scrollTo({top:0, behavior:"smooth"}); });
-      nav.appendChild(b);
-    });
+  /* ---------- numbers drawer ---------- */
+  function openDrawer(on){
+    $("drawer").hidden = !on;
+    $("drawerbg").hidden = !on;
   }
 
   function save(){
@@ -1797,7 +1977,7 @@ footer strong{color:var(--ink-dim); font-weight:600}
         data[el.id] = el.type === "checkbox" ? el.checked : el.value;
       });
       localStorage.setItem("dp.v1", JSON.stringify(data));
-    } catch (e) { /* private window or blocked storage: the page still works */ }
+    } catch (e) { /* private window or blocked storage: the app still works */ }
   }
   function restore(){
     try {
@@ -1812,26 +1992,130 @@ footer strong{color:var(--ink-dim); font-weight:600}
     } catch (e) { /* ignore and keep the example figures */ }
   }
 
+  /* ---------- onboarding ----------
+     Three steps. A director will not fill in forty fields to find out whether a
+     tool is any good. Everything else is editable afterwards in the drawer. */
+  var OB_STEPS = [
+    { title:"First, who are you?",
+      intro:"So the app can keep your position, and Sarah knows who she is talking to.",
+      fields:[ {id:"ob-name", label:"First name", type:"text"},
+               {id:"ob-email", label:"Email address", type:"email"} ] },
+    { title:"Your company",
+      intro:"Rough numbers are fine. You can change any of this afterwards.",
+      fields:[ {id:"profit", label:"Profit before your salary", money:true},
+               {id:"turnover", label:"Turnover", money:true},
+               {id:"assoc", label:"Companies you control", num:true} ] },
+    { title:"How you pay yourself",
+      intro:"The part most directors get wrong, and the part that stays free.",
+      fields:[ {id:"salary", label:"Salary", money:true},
+               {id:"divs", label:"Dividends taken", money:true} ] }
+  ];
+  var obAt = 0;
+
+  function renderOnboard(){
+    var st = OB_STEPS[obAt];
+    $("obtitle").textContent = st.title;
+    $("obintro").textContent = st.intro;
+    var body = $("obbody");
+    body.textContent = "";
+    st.fields.forEach(function(f){
+      var input, live;
+      if (f.money || f.num){
+        live = $(f.id);
+        input = h("input", {type:"number", id:"ob_" + f.id, step:f.num ? "1" : "1000", min:"0"});
+        input.value = live ? live.value : "";
+      } else {
+        input = h("input", {type:f.type, id:f.id});
+        if (PROFILE) input.value = f.id === "ob-name" ? (PROFILE.name || "") : (PROFILE.email || "");
+      }
+      var row = h("div", {"class":"field"}, h("label", {"for":input.id}, f.label));
+      if (f.money) row.appendChild(h("div", {"class":"money"}, input));
+      else row.appendChild(h("div", {style:"flex:0 0 156px"}, input));
+      body.appendChild(row);
+    });
+    var dots = $("obdots");
+    dots.textContent = "";
+    OB_STEPS.forEach(function(_, i){ dots.appendChild(h("i", {"class":i === obAt ? "on" : ""})); });
+    $("obback").hidden = obAt === 0;
+    $("obnext").textContent = obAt === OB_STEPS.length - 1 ? "See my position" : "Next";
+  }
+
+  function commitOnboardStep(){
+    var st = OB_STEPS[obAt], ok = true;
+    st.fields.forEach(function(f){
+      if (f.money || f.num){
+        var el = $("ob_" + f.id), live = $(f.id);
+        if (el && live && el.value !== "") live.value = el.value;
+      }
+    });
+    if (obAt === 0){
+      var nm = $("ob-name"), em = $("ob-email");
+      var email = em ? em.value.trim() : "";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){
+        if (!$("ob-err")) {
+          $("obbody").appendChild(h("p", {"class":"oberr", id:"ob-err"},
+            "That email address does not look right."));
+        }
+        ok = false;
+      } else {
+        PROFILE = { name:(nm ? nm.value.trim() : ""), email:email, created:new Date().toISOString() };
+      }
+    }
+    return ok;
+  }
+
+  function finishOnboard(){
+    ENT.free = true;
+    saveProfile();
+    save();
+    $("onboard").hidden = true;
+    if (typeof window.dpCapture === "function"){
+      try { window.dpCapture(compute(), PROFILE); } catch (e) {}
+    }
+    run();
+  }
+
+  function startOnboard(){
+    obAt = 0;
+    $("onboard").hidden = false;
+    renderOnboard();
+  }
+
+  /* ---------- render ---------- */
   function run(){
     var r = compute();
-    renderNav(r);
+    renderProfileCard(r);
+    renderNav();
     var stage = STAGES.filter(function(s){ return s.id === current; })[0] || STAGES[0];
-    if (!UNLOCKED && stage.id !== "position"){
-      var host0 = $("stage");
-      host0.textContent = "";
-      host0.appendChild(gateBlock(r));
-      save();
-      return;
-    }
+    var t = tierOf(stage.id);
+    $("crumb").textContent = t.name;
+    $("viewtitle").textContent = stage.label;
     var host = $("stage");
     host.textContent = "";
-    stage.render(r).forEach(function(b){ if (b) host.appendChild(b); });
+    if (!unlocked(stage.id)) host.appendChild(lockView(r, t));
+    else stage.render(r).forEach(function(b){ if (b) host.appendChild(b); });
     save();
   }
 
   $("inputs").addEventListener("input", run);
   $("inputs").addEventListener("change", run);
+  $("numbtn").addEventListener("click", function(){ openDrawer(true); });
+  $("drawerclose").addEventListener("click", function(){ openDrawer(false); });
+  $("drawerbg").addEventListener("click", function(){ openDrawer(false); });
+  $("resetBtn").addEventListener("click", function(){
+    try { localStorage.removeItem("dp.profile"); localStorage.removeItem("dp.ent"); } catch (e) {}
+    PROFILE = null; ENT = { free:true }; current = "position";
+    startOnboard();
+  });
+  $("obnext").addEventListener("click", function(){
+    if (!commitOnboardStep()) return;
+    if (obAt === OB_STEPS.length - 1){ finishOnboard(); return; }
+    obAt++; renderOnboard();
+  });
+  $("obback").addEventListener("click", function(){ if (obAt > 0){ obAt--; renderOnboard(); } });
+
   restore();
+  if (!PROFILE) startOnboard();
   run();
 })();
 </script>
