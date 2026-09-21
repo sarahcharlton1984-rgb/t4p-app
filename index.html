@@ -576,9 +576,6 @@ window.dpCapture = function (r, profile) {
   /* ---------- the whole position, computed once ---------- */
   function compute(){
     var r = {};
-    /* Profit is DERIVED. A director thinks in turnover minus costs, and deriving it
-       stops the two ever disagreeing. */
-    r.profitBefore = Math.max(0, r.turnover - r.expenses);
     r.salary = num("salary"); r.divsTaken = num("divs");
     r.other = num("other"); r.rental = num("rental");
     r.pension = num("pen"); r.kids = Math.round(num("kids"));
@@ -590,6 +587,9 @@ window.dpCapture = function (r, profile) {
     r.couple = on("spouse") ? 2 : 1;
     r.turnover = num("turnover"); r.bstotal = num("bstotal"); r.emp = Math.round(num("emp"));
     r.expenses = num("expenses");
+    /* Profit is DERIVED, so turnover and profit can never disagree. This MUST come
+       after turnover and expenses are read, or it is undefined minus undefined. */
+    r.profitBefore = Math.max(0, r.turnover - r.expenses);
     r.vatReg = on("vatReg"); r.customers = $("customers").value;
     r.carType = $("carType").value; r.carList = num("carList"); r.co2 = num("co2");
     r.carFuel = on("carFuel"); r.miles = num("miles");
@@ -2088,7 +2088,8 @@ window.dpCapture = function (r, profile) {
   }
 
   var EXAMPLE_ONLY = ["cash","coinv","dla","capex","mortInt","rental","other","pen","ownPen",
-    "home","prop","inv","pot","bizval","fee","spouseInc","gifted","bstotal","emp","kids","divs"];
+    "home","prop","inv","pot","bizval","fee","spouseInc","gifted","bstotal","emp","kids","divs",
+    "turnover","expenses"];
   var EXAMPLE_FLAGS = ["psc","letConnected","cashEvidence","ceasing","payrollOther","spouseShares"];
 
   function clearExampleData(){
