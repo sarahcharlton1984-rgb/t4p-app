@@ -1552,6 +1552,20 @@ window.dpCapture = function (r, profile) {
 
   {id:"sell", label:"Selling", render:function(r){
     var out = [];
+
+    if (r.bizval === 0){
+      out.push(block("Nothing to sell, on the figures you have given", [
+        lede("You have not said what the business is worth, so there is nothing here to price. Every number on this stage is a percentage of that figure."),
+        lede("It is worth coming back to before you are anywhere near a sale. ",
+          strong("The relief that matters is earned by time, not bought at the last minute"),
+          ": its conditions have to hold throughout the two years ending on completion, and a holding company added late cannot meet its own twelve month clock."),
+        h("p", {"class":"catch"}, strong("Add a value, even a rough one. "),
+          "Under Your numbers, put in what you would sell for today. The difference between qualifying for the relief and not is up to "
+          + gbp(CGT.badrLimit * (CGT.higher - CGT.badrRate)) + " on the first million alone, and you cannot plan for it without a number.")
+      ]));
+      return out;
+    }
+
     out.push(block("The issue", [
       lede("A sale is the single largest taxable event most directors ever have. ",
         strong("The structure that makes it efficient has to be in place long before the buyer appears"),
@@ -1626,6 +1640,19 @@ window.dpCapture = function (r, profile) {
 
   {id:"pass", label:"Passing it on", render:function(r){
     var out = [];
+
+    if (r.estate === 0){
+      out.push(block("Nothing entered to pass on", [
+        lede("No home, no property, no investments, no pension and no business value, so there is no estate here to tax."),
+        lede("That is almost certainly not true of you, it just means the figures have not been filled in. ",
+          strong("Inheritance tax is the one that catches people by surprise"),
+          ", because the allowances are frozen until 2031 while asset values are not, and because from 6 April 2027 an unused pension counts in the estate for the first time."),
+        h("p", {"class":"catch"}, strong("Fill in what you own under Your numbers. "),
+          "A couple passing a home to their children have up to \u00A31m of allowances between them. Above that it is 40%, and the levers that move it, gifts and gifts out of surplus income, need seven years and a settled pattern to work.")
+      ]));
+      return out;
+    }
+
     var noPot = r.ihtOn(r.estate - r.pot).tax;
     out.push(block("The issue", [
       lede("Forty per cent above the allowances, on money that has already been taxed on the way in. ",
