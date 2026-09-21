@@ -85,6 +85,12 @@ input[type=number],select{width:100%; background:var(--ground); color:var(--ink)
 .money input{padding-left:19px}
 select{flex:0 0 148px; text-align:left; font-family:Inter,sans-serif; font-size:13px}
 .num{flex:0 0 62px}
+.derived{margin:9px 0 0; padding:8px 11px; background:var(--ground); border-left:2px solid var(--accent);
+  font-size:12.5px; color:var(--ink-dim)}
+.derived b{font-family:"JetBrains Mono",monospace; color:var(--ink); font-weight:600}
+.warnbox{background:var(--crit-wash); border:1px solid var(--crit); border-radius:3px; padding:16px 18px}
+.warnbox h3{font-size:16px; font-weight:700; margin-bottom:7px}
+.warnbox p{margin:0; font-size:13.5px; color:var(--ink-dim); max-width:70ch}
 input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
 .toggle{display:flex; align-items:flex-start; gap:9px; margin-top:11px; cursor:pointer}
 .toggle input{margin:2px 0 0; accent-color:var(--accent); flex:0 0 auto}
@@ -379,7 +385,8 @@ window.dpCapture = function (r, profile) {
       <div class="field"><label for="turnover">Turnover</label><div class="money"><input type="number" id="turnover" value="640000" step="10000" min="0"></div></div>
       <div class="field"><label for="bstotal">Balance sheet total (assets)</label><div class="money"><input type="number" id="bstotal" value="530000" step="10000" min="0"></div></div>
       <div class="field"><label for="emp">Employees, average</label><input class="num" type="number" id="emp" value="6" step="1" min="0" max="5000"></div>
-      <div class="field"><label for="profit">Profit before your salary</label><div class="money"><input type="number" id="profit" value="185000" step="1000" min="0"></div></div>
+      <div class="field"><label for="expenses">Business costs, before your own pay</label><div class="money"><input type="number" id="expenses" value="455000" step="1000" min="0"></div></div>
+      <p class="derived" id="derived"></p>
       <label class="toggle"><input type="checkbox" id="vatReg" checked><span>Registered for VAT</span></label>
       <div class="field"><label for="customers">You sell mainly to</label>
         <select id="customers">
@@ -569,7 +576,10 @@ window.dpCapture = function (r, profile) {
   /* ---------- the whole position, computed once ---------- */
   function compute(){
     var r = {};
-    r.profitBefore = num("profit"); r.salary = num("salary"); r.divsTaken = num("divs");
+    /* Profit is DERIVED. A director thinks in turnover minus costs, and deriving it
+       stops the two ever disagreeing. */
+    r.profitBefore = Math.max(0, r.turnover - r.expenses);
+    r.salary = num("salary"); r.divsTaken = num("divs");
     r.other = num("other"); r.rental = num("rental");
     r.pension = num("pen"); r.kids = Math.round(num("kids"));
     r.dla = num("dla"); r.cash = num("cash"); r.coinv = num("coinv");
@@ -579,6 +589,7 @@ window.dpCapture = function (r, profile) {
     r.sellIn = parseFloat($("sell").value); r.leave = parseFloat($("leave").value);
     r.couple = on("spouse") ? 2 : 1;
     r.turnover = num("turnover"); r.bstotal = num("bstotal"); r.emp = Math.round(num("emp"));
+    r.expenses = num("expenses");
     r.vatReg = on("vatReg"); r.customers = $("customers").value;
     r.carType = $("carType").value; r.carList = num("carList"); r.co2 = num("co2");
     r.carFuel = on("carFuel"); r.miles = num("miles");
@@ -710,6 +721,14 @@ window.dpCapture = function (r, profile) {
     key.appendChild(h("span", null, h("b", {style:"background:transparent;border:1px solid var(--line)"}),
       "Kept ", h("em", {class:"mono"}, gbp(Math.max(0, r.profitBefore - r.totalTax)))));
 
+    if (r.divsTaken > r.distributable + 1) {
+      out.push(h("section", {"class":"warnbox"},
+        h("h3", null, "These figures cannot be right, so the number above is not either"),
+        h("p", null, "You have taken " + gbp(r.divsTaken) + " of dividends, but after corporation tax this company only has "
+          + gbp(Math.max(0, r.distributable)) + " of distributable profit. A dividend beyond that is not a dividend. "
+          + "It is either a director's loan, which carries its own charge, or an unlawful distribution. "
+          + "Fix the dividend figure or the profit figure in Your numbers, and everything below will make sense.")));
+    }
     out.push(block("This year, on the money the company made", [head, bar, key]));
 
     var exps = [];
@@ -1884,13 +1903,13 @@ window.dpCapture = function (r, profile) {
   /* ---------- profile and entitlements ---------- */
   var PROFILE = null, ENT = { free:true };
   try {
-    PROFILE = JSON.parse(localStorage.getItem("dp.profile") || "null");
-    ENT = JSON.parse(localStorage.getItem("dp.ent") || '{"free":true}');
+    PROFILE = JSON.parse(localStorage.getItem("dp.profile.v2") || "null");
+    ENT = JSON.parse(localStorage.getItem("dp.ent.v2") || '{"free":true}');
   } catch (e) {}
   function saveProfile(){
     try {
-      localStorage.setItem("dp.profile", JSON.stringify(PROFILE));
-      localStorage.setItem("dp.ent", JSON.stringify(ENT));
+      localStorage.setItem("dp.profile.v2", JSON.stringify(PROFILE));
+      localStorage.setItem("dp.ent.v2", JSON.stringify(ENT));
     } catch (e) {}
   }
   function unlocked(id){ return !!ENT[tierOf(id).key]; }
@@ -1976,12 +1995,12 @@ window.dpCapture = function (r, profile) {
       $("inputs").querySelectorAll("input,select").forEach(function(el){
         data[el.id] = el.type === "checkbox" ? el.checked : el.value;
       });
-      localStorage.setItem("dp.v1", JSON.stringify(data));
+      localStorage.setItem("dp.numbers.v2", JSON.stringify(data));
     } catch (e) { /* private window or blocked storage: the app still works */ }
   }
   function restore(){
     try {
-      var raw = localStorage.getItem("dp.v1");
+      var raw = localStorage.getItem("dp.numbers.v2");
       if (!raw) return;
       var data = JSON.parse(raw);
       Object.keys(data).forEach(function(id){
@@ -2002,8 +2021,8 @@ window.dpCapture = function (r, profile) {
                {id:"ob-email", label:"Email address", type:"email"} ] },
     { title:"Your company",
       intro:"Rough numbers are fine. You can change any of this afterwards.",
-      fields:[ {id:"profit", label:"Profit before your salary", money:true},
-               {id:"turnover", label:"Turnover", money:true},
+      fields:[ {id:"turnover", label:"Turnover", money:true},
+               {id:"expenses", label:"Business costs, before your own pay", money:true},
                {id:"assoc", label:"Companies you control", num:true} ] },
     { title:"How you pay yourself",
       intro:"The part most directors get wrong, and the part that stays free.",
@@ -2059,9 +2078,24 @@ window.dpCapture = function (r, profile) {
         ok = false;
       } else {
         PROFILE = { name:(nm ? nm.value.trim() : ""), email:email, created:new Date().toISOString() };
+        /* The example figures exist to show a newcomer what the app does. The moment
+           someone starts entering their OWN numbers they have to go, or the position
+           shown is a blend of their company and a fictional one. */
+        if (!ENT.seeded){ clearExampleData(); ENT.seeded = true; }
       }
     }
     return ok;
+  }
+
+  var EXAMPLE_ONLY = ["cash","coinv","dla","capex","mortInt","rental","other","pen","ownPen",
+    "home","prop","inv","pot","bizval","fee","spouseInc","gifted","bstotal","emp","kids","divs"];
+  var EXAMPLE_FLAGS = ["psc","letConnected","cashEvidence","ceasing","payrollOther","spouseShares"];
+
+  function clearExampleData(){
+    EXAMPLE_ONLY.forEach(function(id){ var el = $(id); if (el) el.value = "0"; });
+    EXAMPLE_FLAGS.forEach(function(id){ var el = $(id); if (el) el.checked = false; });
+    var sell = $("sell"); if (sell) sell.value = "0";
+    var leave = $("leave"); if (leave) leave.value = "0";
   }
 
   function finishOnboard(){
@@ -2084,6 +2118,13 @@ window.dpCapture = function (r, profile) {
   /* ---------- render ---------- */
   function run(){
     var r = compute();
+    var d = $("derived");
+    if (d){
+      d.textContent = "";
+      d.append("Profit before your pay: ");
+      d.appendChild(h("b", null, gbp(r.profitBefore)));
+      if (r.expenses === 0 && r.turnover > 0) d.append("  \u00b7 no costs entered yet");
+    }
     renderProfileCard(r);
     renderNav();
     var stage = STAGES.filter(function(s){ return s.id === current; })[0] || STAGES[0];
@@ -2103,7 +2144,7 @@ window.dpCapture = function (r, profile) {
   $("drawerclose").addEventListener("click", function(){ openDrawer(false); });
   $("drawerbg").addEventListener("click", function(){ openDrawer(false); });
   $("resetBtn").addEventListener("click", function(){
-    try { localStorage.removeItem("dp.profile"); localStorage.removeItem("dp.ent"); } catch (e) {}
+    try { localStorage.removeItem("dp.profile.v2"); localStorage.removeItem("dp.ent.v2"); } catch (e) {}
     PROFILE = null; ENT = { free:true }; current = "position";
     startOnboard();
   });
