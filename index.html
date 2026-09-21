@@ -719,7 +719,8 @@ window.dpCapture = function (r, profile) {
     });
     bar.appendChild(h("i", {style:"width:" + Math.max(0,(denom - r.totalTax)/denom*100) + "%;background:transparent"}));
     key.appendChild(h("span", null, h("b", {style:"background:transparent;border:1px solid var(--line)"}),
-      "Kept ", h("em", {class:"mono"}, gbp(Math.max(0, r.profitBefore - r.totalTax)))));
+      "Left after tax, in your hands or the company's ",
+      h("em", {class:"mono"}, gbp(Math.max(0, r.profitBefore - r.totalTax)))));
 
     if (r.divsTaken > r.distributable + 1) {
       out.push(h("section", {"class":"warnbox"},
@@ -804,10 +805,18 @@ window.dpCapture = function (r, profile) {
         note:r.leave === 2
           ? "The destination decides the treaty, the pension transfer charge and whether the company can follow you. A separate decision from leaving, and usually made too late."
           : "Only relevant once leaving is a decision rather than a thought." },
-      { n:"The order you pull them in", open:true, worth:1,
+      { n:"The order you pull them in", open:true, worth:1, meta:true,
         note:"The one most directors miss. Extraction before structure wastes relief, and structure before a sale needs a year's notice. Sequence is worth more than any single move." }
     ];
-    L.sort(function(a, b){ return a.open !== b.open ? (a.open ? -1 : 1) : b.worth - a.worth; });
+    /* "The order you pull them in" is advice ABOUT the levers, not a lever, so it
+       always sits last among the open ones. Without this it floats to the top the
+       moment the others score low, which reads as nonsense to someone whose only
+       real lever is how they pay themselves. */
+    L.sort(function(a, b){
+      if (a.open !== b.open) return a.open ? -1 : 1;
+      if (a.meta !== b.meta) return a.meta ? 1 : -1;
+      return b.worth - a.worth;
+    });
 
     var lev = h("div", null, L.map(function(l, i){
       var head = h("h3", null, l.n, h("span", {class:"pill" + (l.open ? "" : " shut")}, l.open ? "Open" : "Not yet"));
@@ -939,6 +948,56 @@ window.dpCapture = function (r, profile) {
         ? relief("risk", "Personal allowance taper", gbp(PA - r.pa) + " lost",
             "Between " + gbp(PA_TAPER) + " and " + gbp(B2) + " you lose £1 of allowance for every £2 of income, an effective 60% band. A pension contribution reduces the income that is measured.")
         : null
+    ]));
+
+    /* The remuneration comparison: the same profit, fully extracted, under the
+       director's current salary against the optimal one. Every layer counted on
+       both sides, which is the only honest way to put two routes side by side. */
+    function extractAll(sal){
+      var er = Math.max(0, sal - NI.secondary) * NI.er;
+      if (on("payrollOther")) er = Math.max(0, er - NI.ea);
+      var tp = Math.max(0, r.profitBefore - sal - er - r.pension);
+      var c = corpTax(tp, r.assoc);
+      var divs = Math.max(0, tp - c);
+      var ee = Math.max(0, Math.min(sal, NI.uel) - NI.primary) * NI.main
+             + Math.max(0, sal - NI.uel) * NI.upper;
+      var pt2 = personalTax(sal + r.other + r.rental, divs);
+      var hc = 0;
+      if (r.kids > 0){
+        var ani = sal + r.other + r.rental + divs;
+        if (ani > HICBC.from) hc = r.cb * Math.min(1, (ani - HICBC.from) / (HICBC.to - HICBC.from));
+      }
+      return { tax: c + er + ee + pt2.incomeTax + pt2.divTax + hc,
+               net: sal + divs - ee - pt2.incomeTax - pt2.divTax - hc, divs: divs };
+    }
+    var OPTIMAL = 12570;
+    var onOptimal = Math.abs(r.salary - OPTIMAL) < 500;
+    var mine = extractAll(r.salary);
+    var alt = extractAll(onOptimal ? NI.uel : OPTIMAL);
+    var altLabel = onOptimal ? "At a " + gbp(NI.uel) + " salary" : "At a " + gbp(OPTIMAL) + " salary";
+    var gap = mine.tax - alt.tax;
+
+    out.push(block("Salary against dividends, on your own profit", [
+      lede("The same ", strong(gbp(r.profitBefore)),
+        " of profit, taken out in full, under two different salaries. Every layer counted on both sides."),
+      fork(
+        "Your salary now, " + gbp(r.salary), gbp(mine.tax),
+          "Total tax, leaving you " + gbp(mine.net) + " after everything.",
+        altLabel, gbp(alt.tax),
+          "Total tax, leaving you " + gbp(alt.net) + " after everything.",
+        onOptimal
+          ? h("span", null, "You are on the optimal salary. Going to " + gbp(NI.uel) + " would cost you ",
+              h("b", null, gbp(Math.abs(gap))), " more, which is what this decision is worth.")
+          : (gap > 0
+              ? h("span", null, "Dropping to " + gbp(OPTIMAL) + " would save ", h("b", null, gbp(gap)), " a year.")
+              : h("span", null, "Your current salary is the better of the two by ",
+                  h("b", null, gbp(Math.abs(gap))), ", which is unusual and worth checking with an adviser.")),
+        "Salary is deductible for the company and dividends are not, so a higher salary cuts corporation tax. "
+        + "It also carries employer National Insurance at 15%, employee National Insurance, and income tax at your "
+        + "full marginal rate rather than the dividend rate. For most directors those three outweigh the corporation "
+        + "tax relief, which is why " + gbp(OPTIMAL) + " is the usual answer. It stops being the answer if you have "
+        + "no other income and need the earnings for a mortgage, or if the company cannot pay dividends because it "
+        + "has no distributable profit.")
     ]));
 
     var step = 20000;
