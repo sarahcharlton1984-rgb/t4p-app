@@ -1263,6 +1263,20 @@ window.dpCapture = function (r, profile) {
    flag:function(r){ return r.coinv > 0 || (!on("cashEvidence") && r.cash > 100000); },
    render:function(r){
     var out = [];
+    var held = r.cash + r.coinv;
+
+    if (held === 0){
+      out.push(block("Nothing retained yet", [
+        lede("You have not entered any cash or investments held inside the company, so there is nothing here to put at risk."),
+        lede("This stage matters the moment the company starts keeping money. Retained profit is taxed once, at corporation tax rates, and not again until you take it out, which is why it builds up. ",
+          strong("What it quietly costs is relief"),
+          ": a company holding money it does not need for its trade has that money stripped out of Business Property Relief."),
+        h("p", {"class":"catch"}, strong("Come back when there is a balance. "),
+          "Add the company's cash and investments under Your numbers and this stage will show what is exposed and what the evidence has to prove.")
+      ]));
+      return out;
+    }
+
     out.push(block("The issue", [
       lede("Leaving profit in the company is a legitimate strategy. It is taxed once, at corporation tax rates, and it is not taxed again until you take it. ",
         strong("What it quietly costs you is relief."), " A company that looks like an investment business, or that holds money it does not need, stops being fully sheltered from inheritance tax."),
@@ -1275,9 +1289,13 @@ window.dpCapture = function (r, profile) {
         ". That is all or nothing. Relief on the whole shareholding goes to nil, not to a reduced rate."),
       lede("There is no percentage to hit. It is judged in the round on the capital employed on each side, the time people spend, the split of turnover and the split of profit. A large enough investment portfolio is an activity, and it can tip the company over."),
       r.coinv > 0 ? h("p", {class:"catch"}, strong("On your figures. "),
-        "The company holds " + gbp(r.coinv) + " of investments against a business valued at " + gbp(r.bizval)
-        + ". This tool cannot and will not tell you which side of that line you are on. It flags it, because the consequence is "
-        + gbp(Math.min(r.bizval, IHTC.bprCap) * IHTC.rate) + " of relief on the shareholding, and because the answer depends on evidence a form cannot see.") : null,
+        r.bizval > 0
+          ? "The company holds " + gbp(r.coinv) + " of investments against a business valued at " + gbp(r.bizval)
+            + ". This tool cannot and will not tell you which side of that line you are on. It flags it, because the consequence is "
+            + gbp(Math.min(r.bizval, IHTC.bprCap) * IHTC.rate) + " of relief on the shareholding, and because the answer depends on evidence a form cannot see."
+          : "The company holds " + gbp(r.coinv) + " of investments, and you have not said what the business is worth. "
+            + "The cost of failing this test is a share of the relief on the whole shareholding, so it cannot be sized without that figure. "
+            + "Add it under Your numbers.") : null,
 
       sub("Gate two, does every pound inside it get the relief"),
       lede("Surplus cash and investments the company does not need for its trade are usually stripped out of Business Property Relief as excepted assets, ",
@@ -1305,6 +1323,18 @@ window.dpCapture = function (r, profile) {
 
     var exposed = on("cashEvidence") ? r.coinv : r.cash + r.coinv;
     var cost = on("bpr") ? Math.min(exposed, Math.min(r.bizval, IHTC.bprCap)) * IHTC.rate : 0;
+
+    if (r.bizval === 0){
+      out.push(block("What this is worth cannot be sized yet", [
+        lede("The company holds ", strong(gbp(exposed)),
+          " that this tool cannot justify as needed for the trade. What that costs you depends on the relief it puts at risk, and relief is a percentage of what the shares are worth."),
+        h("p", {"class":"catch"}, strong("You have not entered a business value, so there is no honest number to put here. "),
+          "Add what the business is worth under Your numbers and this becomes a figure rather than a warning. "
+          + "It will not be small: the exposed amount is carved out of the relief and taxed at 40%.")
+      ]));
+      return out;
+    }
+
     out.push(block("What happens if you do, and if you don't", [
       lede("The company holds ", strong(gbp(exposed)), " that a tool cannot justify as needed for the trade."),
       fork(
