@@ -633,7 +633,10 @@ window.dpCapture = function (r, profile) {
     r.dlaBik = r.dla > 10000 ? r.dla * ORI : 0;
 
     r.totalTax = r.ct + r.erNI + r.eeNI + r.incomeTax + r.divTax + r.hicbc;
-    r.effective = r.profitBefore > 0 ? r.totalTax / r.profitBefore : 0;
+    /* The denominator must be every pound the tax above was charged ON, not the
+       company profit alone, or rental and other income inflate the rate. */
+    r.taxedBase = r.profitBefore + r.other + r.rental;
+    r.effective = r.taxedBase > 0 ? r.totalTax / r.taxedBase : 0;
     r.inHand = r.salary + r.divsTaken - r.eeNI - r.incomeTax - r.divTax - r.hicbc;
 
     /* CGT on a sale */
@@ -697,9 +700,10 @@ window.dpCapture = function (r, profile) {
     var out = [];
     var head = h("div", {class:"headline"},
       h("div", {class:"figure crit"}, h("div", {class:"n mono"}, gbp(r.totalTax)),
-        h("div", {class:"k"}, "total tax on " + gbp(r.profitBefore) + " of profit")),
+        h("div", {class:"k"}, "total tax on " + gbp(r.taxedBase)
+          + ((r.other + r.rental) > 0 ? " of profit and other income" : " of profit"))),
       h("div", {class:"figure"}, h("div", {class:"n mono"}, pct(r.effective)),
-        h("div", {class:"k"}, "effective rate, every layer counted")),
+        h("div", {class:"k"}, "effective rate on all of it, every layer counted")),
       h("div", {class:"figure"}, h("div", {class:"n mono"}, gbp(Math.max(0, r.inHand))),
         h("div", {class:"k"}, "reaching you, after all of it")));
 
@@ -711,7 +715,7 @@ window.dpCapture = function (r, profile) {
       {k:"Dividend tax", v:r.divTax, c:"var(--accent-soft)"},
       {k:"Child Benefit charge", v:r.hicbc, c:"#8A7A4A"}
     ].filter(function(p){ return p.v > 0.5; });
-    var denom = Math.max(r.profitBefore, r.totalTax, 1);
+    var denom = Math.max(r.taxedBase, r.totalTax, 1);
     var bar = h("div", {class:"bar"}), key = h("div", {class:"barkey"});
     parts.forEach(function(p){
       bar.appendChild(h("i", {style:"width:" + (p.v/denom*100) + "%;background:" + p.c, title:p.k + " " + gbp(p.v)}));
@@ -720,7 +724,7 @@ window.dpCapture = function (r, profile) {
     bar.appendChild(h("i", {style:"width:" + Math.max(0,(denom - r.totalTax)/denom*100) + "%;background:transparent"}));
     key.appendChild(h("span", null, h("b", {style:"background:transparent;border:1px solid var(--line)"}),
       "Left after tax, in your hands or the company's ",
-      h("em", {class:"mono"}, gbp(Math.max(0, r.profitBefore - r.totalTax)))));
+      h("em", {class:"mono"}, gbp(Math.max(0, r.taxedBase - r.totalTax)))));
 
     if (r.divsTaken > r.distributable + 1) {
       out.push(h("section", {"class":"warnbox"},
@@ -739,7 +743,9 @@ window.dpCapture = function (r, profile) {
     }
     exp(r.effective > 0.40 ? "hot" : "warm", "This year, on what you extracted", gbp(r.totalTax),
       "Corporation tax in the company, then income tax, National Insurance and dividend tax on the way out. An effective "
-      + pct(r.effective) + " on the profit before your pay.");
+      + pct(r.effective) + ((r.other + r.rental) > 0
+        ? " on your company profit and your other income together."
+        : " on the profit before your pay."));
     if (r.bizval > 0) exp(r.cgt > 200000 ? "hot" : "warm", "On a sale of the business", gbp(r.cgt),
       on("badr") ? "Business Asset Disposal Relief at 18% on the first £1m, 24% above it."
                  : "24% throughout, with no Business Asset Disposal Relief applied.");
