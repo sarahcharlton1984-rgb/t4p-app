@@ -175,6 +175,27 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid 
   text-transform:uppercase; color:var(--ink-faint); margin:22px 0 10px}
 .sub:first-child{margin-top:0}
 
+.bigline{font-size:clamp(16px,2.4vw,20px); color:var(--ink); margin:18px 0 0; max-width:60ch;
+  font-family:"Space Grotesk",sans-serif; font-weight:500; letter-spacing:-.01em}
+.bigline b{color:var(--crit); font-weight:700}
+.routes{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:14px; margin-top:6px}
+.route{background:var(--ground); border:1px solid var(--line); border-radius:3px; padding:16px 17px}
+.route h3{font-size:15.5px; font-weight:600; margin-bottom:7px}
+.route p{margin:0; font-size:13.5px; color:var(--ink-dim)}
+.route .cta{margin-top:13px; display:inline-block; text-decoration:none; font-size:13px; padding:9px 15px}
+.levelcard{background:var(--ground); border:1px solid var(--line); border-radius:3px;
+  padding:18px 19px; margin-bottom:14px}
+.levelhead{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.levelhead h3{font-size:17px; font-weight:700; letter-spacing:-.01em}
+.levelhead .price{font-family:"JetBrains Mono",monospace; font-size:13.5px; color:var(--accent)}
+.levelcard .plain{margin:9px 0 0; font-size:14px; color:var(--ink-dim); max-width:64ch}
+.levelcard .worth{margin:11px 0 0; font-size:13.5px; color:var(--ink)}
+.levelcard .worth b{color:var(--crit); font-size:16px}
+.levelcard ul{margin:12px 0 0; padding-left:18px; color:var(--ink-dim); font-size:13px; max-width:64ch}
+.levelcard li{margin-bottom:5px}
+.levelcard .cta{margin-top:15px; font-size:13px; padding:9px 16px}
+.levelcard .small{margin:9px 0 0; font-size:12px; color:var(--ink-faint)}
+
 /* ---------- app shell ---------- */
 #app{display:grid; grid-template-columns:268px 1fr; min-height:100vh; align-items:stretch}
 @media (max-width:900px){#app{grid-template-columns:1fr}}
@@ -698,14 +719,18 @@ window.dpCapture = function (r, profile) {
 
   {id:"position", label:"Your position", render:function(r){
     var out = [];
-    var head = h("div", {class:"headline"},
-      h("div", {class:"figure crit"}, h("div", {class:"n mono"}, gbp(r.totalTax)),
-        h("div", {class:"k"}, "total tax on " + gbp(r.taxedBase)
-          + ((r.other + r.rental) > 0 ? " of profit and other income" : " of profit"))),
-      h("div", {class:"figure"}, h("div", {class:"n mono"}, pct(r.effective)),
-        h("div", {class:"k"}, "effective rate on all of it, every layer counted")),
-      h("div", {class:"figure"}, h("div", {class:"n mono"}, gbp(Math.max(0, r.inHand))),
-        h("div", {class:"k"}, "reaching you, after all of it")));
+    var per100 = Math.round(r.effective * 100);
+    var head = h("div", {class:"tiles"},
+      h("div", {class:"tile"}, h("div", {class:"k"}, "Your company made"),
+        h("div", {class:"v mono"}, gbp(r.taxedBase)),
+        h("div", {class:"n"}, (r.other + r.rental) > 0
+          ? "profit, plus your other income" : "profit, before you were paid")),
+      h("div", {class:"tile crit"}, h("div", {class:"k"}, "Goes to tax"),
+        h("div", {class:"v mono"}, gbp(r.totalTax)),
+        h("div", {class:"n"}, "the company's tax and yours, added up")),
+      h("div", {class:"tile"}, h("div", {class:"k"}, "You keep"),
+        h("div", {class:"v mono"}, gbp(Math.max(0, r.inHand))),
+        h("div", {class:"n"}, "what actually reaches your bank account")));
 
     var parts = [
       {k:"Corporation tax", v:r.ct, c:"var(--crit-fill)"},
@@ -734,7 +759,15 @@ window.dpCapture = function (r, profile) {
           + "It is either a director's loan, which carries its own charge, or an unlawful distribution. "
           + "Fix the dividend figure or the profit figure in Your numbers, and everything below will make sense.")));
     }
-    out.push(block("This year, on the money the company made", [head, bar, key]));
+    out.push(block("Where your money went this year", [
+      head,
+      h("p", {class:"bigline"}, "For every \u00A3100 your company made, ",
+        h("b", null, "\u00A3" + per100 + " goes to tax"), ". You keep the rest."),
+      bar, key,
+      h("p", {class:"lede", style:"margin-top:14px"},
+        "Tax gets taken twice. Once from the company, on its profit. Then again from you, "
+        + "when you move that money into your own pocket. Most people only ever see the first one.")
+    ]));
 
     var exps = [];
     function exp(cls, title, amt, note){
@@ -833,6 +866,21 @@ window.dpCapture = function (r, profile) {
         h("p", null, l.note));
     }));
     out.push(block("The seven levers, ranked by what they are worth to you", lev));
+
+    out.push(block("So what do you do with this?", [
+      lede("Three honest options. The first one costs nothing."),
+      h("div", {class:"routes"},
+        h("div", {class:"route"},
+          h("h3", null, "Do it yourself"),
+          h("p", null, "Everything above is yours. Print it, act on the top lever, and come back when your numbers change. Plenty of directors need nothing more than this.")),
+        h("div", {class:"route"},
+          h("h3", null, "Take it to your accountant"),
+          h("p", null, "Hand them this page and ask the one question at the top of your list. A good accountant will tell you in ten minutes whether it applies to you. If they have never raised any of it, that is worth knowing too.")),
+        h("div", {class:"route"},
+          h("h3", null, "Have us do it"),
+          h("p", null, "For the parts you cannot do from a screen: the holding company, the share reorganisation, the move abroad, the sale. That is the paid work, and it starts with a call."),
+          h("a", {class:"cta", href:"https://tax4pros.co.uk/apply?utm_source=position&utm_medium=app&utm_campaign=what_now"}, "Apply to work with us")))
+    ]));
     return out;
   }},
 
@@ -1960,6 +2008,69 @@ window.dpCapture = function (r, profile) {
     return out;
   }},
 
+  {id:"levels", label:"What you can unlock", render:function(r){
+    var out = [];
+    out.push(block("The idea", [
+      lede("The free part tells you ", strong("what your position is"),
+        ". The paid parts tell you ", strong("what to do about it"), ", one area at a time."),
+      lede("You do not buy all of it. You buy the bit that matches where you are. A director "
+        + "with a growing company and no plans to sell has no use for the exit stages, and should not pay for them.")
+    ]));
+
+    var stakes = {
+      year:   { n:r.totalTax,        why:"is what this year is costing you" },
+      struct: { n:r.cash + r.coinv + r.capex, why:"is sitting inside your company" },
+      exit:   { n:r.cgt + r.iht,     why:"is what a sale and your estate are heading into" }
+    };
+    var plain = {
+      year:   "The everyday stuff. How you pay yourself, your pension, your car, putting your "
+            + "partner on the payroll, VAT, and what the public can see about your company.",
+      struct: "The shape of things. Money you have left in the company, equipment you have bought, "
+            + "property you own, and whether the contracts you work under count as employment.",
+      exit:   "The big, slow ones. Selling the business, moving abroad, passing it to your children, "
+            + "and whether a trust does anything useful for you."
+    };
+
+    var rows = h("div", null);
+    TIERS.forEach(function(t){
+      if (t.key === "free") return;
+      var st = stakes[t.key] || { n:0, why:"" };
+      var open = !!ENT[t.key];
+      var card = h("div", {class:"levelcard"},
+        h("div", {class:"levelhead"},
+          h("h3", null, t.name),
+          h("span", {class:"price"}, open ? "Unlocked" : t.price)),
+        h("p", {class:"plain"}, plain[t.key]),
+        (st.n > 0 && !open)
+          ? h("p", {class:"worth"}, h("b", {class:"mono"}, gbp(st.n)), " " + st.why + ".")
+          : null);
+      var ul = h("ul");
+      t.covers.forEach(function(c){ ul.appendChild(h("li", null, c)); });
+      card.appendChild(ul);
+      if (!open){
+        var b = h("button", {type:"button", class:"cta"}, "Unlock " + t.name);
+        var note = h("p", {class:"small"}, "");
+        b.addEventListener("click", function(){
+          note.textContent = "Payments are not switched on yet. This is the working app, not the shop.";
+        });
+        card.appendChild(b); card.appendChild(note);
+      }
+      rows.appendChild(card);
+    });
+    out.push(block("The three levels", rows));
+
+    out.push(block("What you are NOT buying", [
+      lede("Worth being straight about this."),
+      h("p", {class:"catch"}, strong("You are not buying advice on your affairs. "),
+        "Every level is still a tool. It works from what you type in, and it cannot see your share "
+        + "classes, your paperwork or your family. It will tell you where the money is and what the "
+        + "rules are. It will not tell you that your particular situation qualifies, because no tool honestly can."),
+      lede("If you want someone to look at your actual position and be responsible for the answer, "
+        + "that is the call, not the subscription.")
+    ]));
+    return out;
+  }},
+
   {id:"next", label:"What happens next", render:function(r){
     var out = [];
     out.push(block("You now have the diagnosis", [
@@ -1997,7 +2108,7 @@ window.dpCapture = function (r, profile) {
      grown, the exit when there is something to sell or pass on. */
   var TIERS = [
     { key:"free",   name:"Your position",  price:"Free",
-      stages:["position","pay","next"], covers:[] },
+      stages:["position","pay","levels","next"], covers:[] },
     { key:"year",   name:"This year",      price:"£29 a month",
       stages:["pension","cars","family","vat","filing","accounts"],
       covers:["What your pension and your car actually cost, both layers",
@@ -2088,7 +2199,7 @@ window.dpCapture = function (r, profile) {
     }
     var wrap = h("section", {"class":"lockwrap"},
       h("p", {"class":"eyebrow"}, t.name + " · locked"),
-      h("h2", null, "On your numbers, this level is about"),
+      h("h2", null, "This part is not free, and here is why it is worth it"),
       h("div", {"class":"stake mono"}, gbp(stake)),
       h("p", {"class":"stakecap"}, cap));
     var ul = h("ul");
