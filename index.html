@@ -761,8 +761,8 @@ window.dpCapture = function (r, profile) {
     if (r.divsTaken > r.distributable + 1) {
       out.push(h("section", {"class":"warnbox"},
         h("h3", null, "These figures cannot be right, so the number above is not either"),
-        h("p", null, "You have taken " + gbp(r.divsTaken) + " of dividends, but after corporation tax this company only has "
-          + gbp(Math.max(0, r.distributable)) + " of distributable profit. A dividend beyond that is not a dividend. "
+        h("p", null, "You have taken " + gbp(r.divsTaken) + " out as dividends, but once the company has paid its own tax there is only "
+          + gbp(Math.max(0, r.distributable)) + " there to take. A dividend beyond that is not a dividend. "
           + "It is either a director's loan, which carries its own charge, or an unlawful distribution. "
           + "Fix the dividend figure or the profit figure in Your numbers, and everything below will make sense.")));
     }
@@ -782,7 +782,7 @@ window.dpCapture = function (r, profile) {
         h("div", {class:"amt"}, amt), h("p", null, note)));
     }
     exp(r.effective > 0.40 ? "hot" : "warm", "This year, on what you extracted", gbp(r.totalTax),
-      "Corporation tax in the company, then income tax, National Insurance and dividend tax on the way out. An effective "
+      "The company pays tax on its profit. Then you pay again when you move that money to yourself. That is "
       + pct(r.effective) + ((r.other + r.rental) > 0
         ? " on your company profit and your other income together."
         : " on the profit before your pay."));
@@ -831,7 +831,7 @@ window.dpCapture = function (r, profile) {
       { n:"Where you are tax resident", open:r.leave > 0,
         worth:r.leave > 0 ? r.totalTax * 0.6 : 0,
         note:r.leave === 2
-          ? "You have said within two years. The Statutory Residence Test is a day count against five ties, and after " + r.yrs + " years here the estate stays in the UK net for years after you go."
+          ? "You have said within two years. Whether you are still UK resident is decided by counting: nights here, against a short list of ties like family, a home and work. It is called the Statutory Residence Test. After " + r.yrs + " years here the estate stays in the UK net for years after you go."
           : r.leave === 1
             ? "You are thinking about it. That is the right time to look, because the test is a day count and the planning has to happen before the tax year starts, not after."
             : "Not on your list. It is the largest lever there is and the slowest, so it only counts if you actually want it." },
@@ -1087,8 +1087,8 @@ window.dpCapture = function (r, profile) {
    render:function(r){
     var out = [];
     out.push(block("The issue", [
-      lede("An employer pension contribution costs no National Insurance, reduces corporation tax, and ",
-        strong("is not limited by your salary"),
+      lede("Money your company puts into your pension never counts as wages, so there is no National Insurance on it, and the company takes it off its profit. Best of all it ",
+        strong("is not capped by what you pay yourself"),
         ". That last point is why it works for a director on £12,570 with the rest in dividends."),
       lede("It is not free money. Three quarters of it is taxed when you draw it, you cannot touch it until 57, and from 6 April 2027 whatever is left sits in your estate for inheritance tax."),
       h("p", {class:"catch"}, strong("The one that catches directors. "),
@@ -1216,8 +1216,8 @@ window.dpCapture = function (r, profile) {
 
     var out = [];
     out.push(block("The issue", [
-      lede("A company car is taxed on ", strong("the list price when it was new"),
-        ", not on what the company paid for it. A three year old bargain is taxed on its price when new, which is why buying cheap does not help."),
+      lede("A company car is taxed on ", strong("what it cost brand new"),
+        ", not on what your company actually paid. Buy a three year old bargain and you are still taxed on the showroom price, which is why buying cheap does not help here."),
       lede("And it is two layers, not one. You pay income tax on a percentage of that list price, and ",
         strong("the company pays Class 1A National Insurance at 15% on the same number"),
         ". The company layer is the one directors forget.")
@@ -1340,7 +1340,7 @@ window.dpCapture = function (r, profile) {
 
     out.push(block("Two separate tests, and they fail differently", [
       sub("Gate one, does the company qualify at all"),
-      lede("Business Property Relief is denied outright where a business ", strong("consists wholly or mainly of making or holding investments"),
+      lede("There is a break that takes your company shares out of inheritance tax altogether. It is called Business Property Relief, and you lose ALL of it if your business ", strong("consists wholly or mainly of making or holding investments"),
         ". That is all or nothing. Relief on the whole shareholding goes to nil, not to a reduced rate."),
       lede("There is no percentage to hit. It is judged in the round on the capital employed on each side, the time people spend, the split of turnover and the split of profit. A large enough investment portfolio is an activity, and it can tip the company over."),
       r.coinv > 0 ? h("p", {class:"catch"}, strong("On your figures. "),
@@ -1353,7 +1353,7 @@ window.dpCapture = function (r, profile) {
             + "Add it under Your numbers.") : null,
 
       sub("Gate two, does every pound inside it get the relief"),
-      lede("Surplus cash and investments the company does not need for its trade are usually stripped out of Business Property Relief as excepted assets, ",
+      lede("Spare cash and investments the company does not actually need for its work get pulled out of that break and taxed anyway. The jargon for them is ", strong("excepted assets"), ". It happens ",
         strong("even where the company still qualifies"), ". There is no published safe level; it turns on evidence."),
       lede("The test is that the asset was either used for the business throughout the last two years, or is required at the time of transfer for future use. Either limb saves it. ",
         strong("Required means an identified, evidenced purpose"), ", not prudence and not a rainy day fund. Cash held in case an opportunity comes along is the argument that has already lost in the tribunals.")
@@ -1410,8 +1410,8 @@ window.dpCapture = function (r, profile) {
     var cashNow = relief100 * r.marginalCT;
 
     out.push(block("The issue", [
-      lede("Buy new equipment through the company and ", strong("full expensing gives you 100% of the cost against profits in the year you buy it"),
-        ", with no cap. That is the best relief available and most directors never hear its name."),
+      lede("Buy new equipment through the company and you can ", strong("knock the whole cost off this year's profit"),
+        ", however much it was. It is called full expensing, it is the best deal available, and most directors have never heard of it."),
       lede("It is companies only, it needs the asset to be ", strong("new and unused"),
         ", and cars never qualify, no matter how they are financed.")
     ]));
@@ -1478,8 +1478,8 @@ window.dpCapture = function (r, profile) {
   {id:"family", label:"Family", render:function(r){
     var out = [];
     out.push(block("The issue", [
-      lede("Two allowances, two basic rate bands, two sets of nil-rate bands. ",
-        strong("A household is taxed as individuals"), ", and most director households leave one person's allowances unused while the other pays at the top rate.")
+      lede("Every adult gets their own tax-free amount and their own lower-rate band. ",
+        strong("The taxman counts people, not households"), ", and most director households leave one person's allowances unused while the other pays at the top rate.")
     ]));
 
     var half = r.divsTaken / 2;
@@ -1532,8 +1532,7 @@ window.dpCapture = function (r, profile) {
     var geared = r.mortInt > 0 && r.rental > 0 && (r.mortInt / r.rental) > 0.25;
 
     out.push(block("The issue", [
-      lede("Interest on a residential let held in your own name is ", strong("not a deduction"),
-        ". It is added back, and you get a tax reducer worth 20% of it instead."),
+      lede("If you own a rental in your own name, you can no longer treat the mortgage interest as a cost the way any other business would. ", strong("It gets added back to your income"), ", and you get a 20% discount on it instead."),
       lede("That is not just a smaller relief. ",
         strong("The added back interest inflates your taxable income"),
         ", which can push you into the higher rate, strip your personal allowance between £100,000 and £125,140, or trigger the Child Benefit charge, while your actual cash in hand has not moved at all."),
@@ -1630,8 +1629,8 @@ window.dpCapture = function (r, profile) {
       relief(on("badr") ? "open" : "risk", "Business Asset Disposal Relief", "18% on the first " + gbpShort(CGT.badrLimit),
         "The lifetime limit is " + gbp(CGT.badrLimit) + " and the rate is 18% for 2026/27, against 24% otherwise. Maximum value "
         + gbp(CGT.badrLimit * (CGT.higher - CGT.badrRate)) + "."),
-      relief("risk", "The four-part 5% test", "",
-        "Personal company means 5% of ordinary share capital, 5% of votes, 5% of distributable profits and 5% of assets on a winding up, or 5% of proceeds on a whole company sale. Alphabet and growth shares routinely fail the economic legs. Holding 5% of the shares is not enough."),
+      relief("risk", "Owning 5% is not enough", "four tests, not one",
+        "People think the discount needs 5% of the shares. It actually needs FOUR things at 5%: the shares, the votes, the share of profits, and the share of what is left if the company is wound up (or of the money if the whole company is sold). Alphabet and growth shares routinely fail the economic legs. Holding 5% of the shares is not enough."),
       relief(r.sellIn === 2 ? "risk" : "open", "The two-year clock", "",
         "The conditions must hold throughout the two years ending with the disposal, including being an officer or employee. If the trade ceases first, you have three years from cessation to sell."),
       relief("open", "Annual exempt amount", gbp(CGT.aea), "Down from £12,300 in 2022/23. On a sale of this size it is a rounding error."),
@@ -1756,7 +1755,7 @@ window.dpCapture = function (r, profile) {
     out.push(block("The issue", [
       lede("A trust separates ", strong("who controls an asset from who benefits from it"),
         ". That is the whole idea, and it is why it survives as a tool for a director who wants value to move down a generation without handing a nineteen year old the shares."),
-      lede("It is also why trusts stopped being fashionable. On 22 March 2006 the relevant property regime was extended to virtually every new lifetime trust, which brought a charge on the way in, a charge every ten years and a charge on the way out. That date is the reason your accountant's opinion of trusts probably formed before it.")
+      lede("It is also why trusts stopped being fashionable. On 22 March 2006 the rules were widened to cover almost every new trust, which brought a tax charge on the way in, another every ten years, and another on the way out. That date is the reason your accountant's opinion of trusts probably formed before it.")
     ]));
 
     out.push(block("The three charges, and when they are nil", [
@@ -1901,7 +1900,7 @@ window.dpCapture = function (r, profile) {
 
     var out = [];
     out.push(block("The issue", [
-      lede("Your accounts are a public document. Anyone can pull them, free, in about ten seconds: a competitor, a customer, a supplier deciding your credit terms, a member of staff wondering what you earn. ",
+      lede("Your accounts are published on a government website where anyone can read them, free, in about ten seconds: a competitor, a customer, a supplier deciding your credit terms, a member of staff wondering what you earn. ",
         strong("What they can see is decided by which size box you fall into"), ", and that is about to change."),
       lede("On the figures you have entered the company looks like a ", strong(size),
         " company. Two of the three tests decide it, and a change only counts if it holds for two consecutive years, so check last year's figures before relying on this."),
@@ -1974,7 +1973,7 @@ window.dpCapture = function (r, profile) {
 
     var out = [];
     out.push(block("The issue", [
-      lede("Making Tax Digital for Income Tax is the biggest change to how people file in a generation, and ",
+      lede("HMRC is switching from one tax return a year to four updates a year. It is called Making Tax Digital, and ",
         strong("most directors assume it applies to them when it does not"), "."),
       lede("It covers ", strong("sole trade and property income only"),
         ". Your salary and your dividends are outside it entirely. A director with no rent and no sole trade work is unaffected, no matter how large the company is."),
