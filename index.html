@@ -175,6 +175,13 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid 
   text-transform:uppercase; color:var(--ink-faint); margin:22px 0 10px}
 .sub:first-child{margin-top:0}
 
+.plainsay{background:var(--ok-wash); border-left:3px solid var(--accent); border-radius:2px;
+  padding:16px 20px}
+.plainlabel{font-family:"JetBrains Mono",monospace; font-size:9.5px; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--accent); margin:0 0 7px}
+.plaintext{margin:0; font-size:clamp(15px,2.1vw,17.5px); line-height:1.5; color:var(--ink);
+  max-width:62ch; font-family:"Space Grotesk",Inter,sans-serif; font-weight:500; letter-spacing:-.008em}
+
 .bigline{font-size:clamp(16px,2.4vw,20px); color:var(--ink); margin:18px 0 0; max-width:60ch;
   font-family:"Space Grotesk",sans-serif; font-weight:500; letter-spacing:-.01em}
 .bigline b{color:var(--crit); font-weight:700}
@@ -2147,6 +2154,31 @@ window.dpCapture = function (r, profile) {
   }
   function unlocked(id){ return !!ENT[tierOf(id).key]; }
 
+
+  /* ---------- the point of each stage, in plain words ----------
+     Sarah: "an 8 year old needs to understand this". These lead every stage. The
+     detail underneath is unchanged and still carries the correct technical names,
+     because a reader who takes this to their accountant needs the real words too. */
+  var PLAIN = {
+    position: "",
+    pay: "Your company's money is not your money yet. Getting it out is the bit that costs you, and how you do it changes the bill.",
+    pension: "Your company can pay straight into your pension. That money never becomes wages, so nobody pays National Insurance on it, and the company takes it off its profit. The catch is you cannot touch it for years.",
+    cars: "Putting a car through the company does not make it free. You get taxed every year on a slice of what the car cost when it was BRAND NEW, even if you bought it second hand and cheap.",
+    family: "Tax is worked out per person, not per household. If you pay top rate and your partner has allowances going spare, you are paying more than the family needs to.",
+    vat: "Once you sell enough, you have to start charging VAT and handing it to HMRC. If your customers are businesses they claim it back and barely notice. If they are ordinary people, it comes out of your prices or your profit.",
+    filing: "HMRC is moving to quarterly reporting. It only applies to rent and self employed work, not to your salary or dividends, so most directors are not affected at all.",
+    accounts: "Your accounts go on a public website that anyone can read. Right now you can keep your profit figure off it. From 2028 you cannot.",
+    keep: "Money left sitting in the company is fine. Money the company clearly does not need for its actual work is a problem, because it can lose you a big inheritance tax break later.",
+    capital: "Buy equipment through the company and you can usually knock the whole cost off this year's profit. Sell it later and some of that comes back.",
+    property: "A rental in your own name no longer lets you count the mortgage interest as a cost. You get a much smaller discount instead, which is why so many landlords ask about companies.",
+    ir35: "Some contracts are really a job wearing a costume. IR35 is the rule that decides whether yours is one. Get it wrong and someone pays employment tax on everything you earned.",
+    sell: "Selling your business is probably the biggest single tax bill of your life. The discount that makes it bearable has to be earned years in advance, not arranged at the last minute.",
+    leave: "Leaving the UK for tax is not about where you feel you live. It is counting: nights in the country, and a short list of ties. And it does not end the day you go.",
+    pass: "When you die, whatever is above your allowances is taxed at 40 per cent. Money you already paid tax on once, taxed again.",
+    trusts: "A trust separates who controls the money from who gets it. That is useful if you want value to move down to your children without handing a teenager the keys.",
+    next: ""
+  };
+
   var current = "position";
 
   /* ---------- sidebar ---------- */
@@ -2200,6 +2232,10 @@ window.dpCapture = function (r, profile) {
     var wrap = h("section", {"class":"lockwrap"},
       h("p", {"class":"eyebrow"}, t.name + " · locked"),
       h("h2", null, "This part is not free, and here is why it is worth it"),
+      h("p", {"class":"plaintext", style:"margin:0 0 14px"},
+        t.key === "year" ? "This level is the everyday stuff: how you pay yourself, your pension, your car, your partner, VAT, and what the public can see about your company."
+        : t.key === "struct" ? "This level is the shape of things: money left in the company, equipment you have bought, property you own, and whether your contracts count as employment."
+        : "This level is the big slow ones: selling up, moving abroad, passing it to your children, and whether a trust helps."),
       h("div", {"class":"stake mono"}, gbp(stake)),
       h("p", {"class":"stakecap"}, cap));
     var ul = h("ul");
@@ -2367,8 +2403,16 @@ window.dpCapture = function (r, profile) {
     $("viewtitle").textContent = stage.label;
     var host = $("stage");
     host.textContent = "";
-    if (!unlocked(stage.id)) host.appendChild(lockView(r, t));
-    else stage.render(r).forEach(function(b){ if (b) host.appendChild(b); });
+    if (!unlocked(stage.id)) {
+      host.appendChild(lockView(r, t));
+    } else {
+      if (PLAIN[stage.id]) {
+        host.appendChild(h("section", {"class":"plainsay"},
+          h("p", {"class":"plainlabel"}, "In plain words"),
+          h("p", {"class":"plaintext"}, PLAIN[stage.id])));
+      }
+      stage.render(r).forEach(function(b){ if (b) host.appendChild(b); });
+    }
     save();
   }
 
