@@ -346,7 +346,10 @@ footer strong{color:var(--ink-dim); font-weight:600}
 window.dpCapture = function (r, profile) {
   if (!profile || !profile.email) return;
   // Figures go straight into the app-lead emails, so they travel formatted ("£73,844").
-  var gbp = function (n) { return "£" + Math.round(Math.max(0, n || 0)).toLocaleString("en-GB"); };
+  // GHL's inbound webhook drops literal commas from values (seen 25 Sep: "£41,250" arrived as
+  // "£41250"), so every comma travels as an HTML entity; the emails are HTML and render it as ",".
+  var c = function (t) { return String(t).replace(/,/g, "&#44;"); };
+  var gbp = function (n) { return c("£" + Math.round(Math.max(0, n || 0)).toLocaleString("en-GB")); };
   try {
     fetch("https://services.leadconnectorhq.com/hooks/6GPl4TryP7F4DBJBSJMc/webhook-trigger/a93bef9e-9720-4d64-a05c-4d29a63ab679", {
       method: "POST",
@@ -371,7 +374,7 @@ window.dpCapture = function (r, profile) {
         // Ready-made lines for the app-lead emails (content/emails/2026-09-25-app-lead-sequence.md).
         // Built here so GHL needs no If/Else: a zero figure sends an empty line, not "about £0".
         greeting_name: (profile.name || "").trim().split(" ")[0] || "there",
-        sale_line: r.cgt > 0 ? "Sell at today's rates and the tax on the sale is about " + gbp(r.cgt) + ", on the value you gave the company." : "",
+        sale_line: r.cgt > 0 ? c("Sell at today's rates and the tax on the sale is about ") + gbp(r.cgt) + c(", on the value you gave the company.") : "",
         iht_line: r.iht > 0 ? "Inheritance tax on your estate once pensions come into it in April 2027: " + gbp(r.iht) + "." : ""
       })
     }).catch(function () {});
