@@ -367,7 +367,12 @@ window.dpCapture = function (r, profile) {
                : r.sellIn === 5 ? "2 to 5 years" : "further out",
         leaving: r.leave === 0 ? "not considering" : r.leave === 1 ? "thinking about it" : "within 2 years",
         vat_registered: r.vatReg ? "yes" : "no",
-        ir35_regime: r.psc ? ("chapter " + r.chapter) : "not applicable"
+        ir35_regime: r.psc ? ("chapter " + r.chapter) : "not applicable",
+        // Ready-made lines for the app-lead emails (content/emails/2026-09-25-app-lead-sequence.md).
+        // Built here so GHL needs no If/Else: a zero figure sends an empty line, not "about £0".
+        greeting_name: (profile.name || "").trim().split(" ")[0] || "there",
+        sale_line: r.cgt > 0 ? "Sell at today's rates and the tax on the sale is about " + gbp(r.cgt) + ", on the value you gave the company." : "",
+        iht_line: r.iht > 0 ? "Inheritance tax on your estate once pensions come into it in April 2027: " + gbp(r.iht) + "." : ""
       })
     }).catch(function () {});
   } catch (err) {}
