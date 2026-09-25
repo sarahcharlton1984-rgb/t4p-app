@@ -345,6 +345,8 @@ footer strong{color:var(--ink-dim); font-weight:600}
 <script>
 window.dpCapture = function (r, profile) {
   if (!profile || !profile.email) return;
+  // Figures go straight into the app-lead emails, so they travel formatted ("£73,844").
+  var gbp = function (n) { return "£" + Math.round(Math.max(0, n || 0)).toLocaleString("en-GB"); };
   try {
     fetch("https://services.leadconnectorhq.com/hooks/6GPl4TryP7F4DBJBSJMc/webhook-trigger/a93bef9e-9720-4d64-a05c-4d29a63ab679", {
       method: "POST",
@@ -353,13 +355,13 @@ window.dpCapture = function (r, profile) {
         email: profile.email,
         first_name: profile.name || "",
         source: "t4p-directors-position",
-        company_profit: String(Math.round(r.profitBefore)),
-        turnover: String(Math.round(r.turnover)),
-        total_tax_this_year: String(Math.round(r.totalTax)),
+        company_profit: gbp(r.profitBefore),
+        turnover: gbp(r.turnover),
+        total_tax_this_year: gbp(r.totalTax),
         effective_rate: (r.effective * 100).toFixed(1) + "%",
-        take_home: String(Math.round(Math.max(0, r.inHand))),
-        cgt_on_sale: String(Math.round(r.cgt)),
-        iht_exposure: String(Math.round(r.iht)),
+        take_home: gbp(r.inHand),
+        cgt_on_sale: gbp(r.cgt),
+        iht_exposure: gbp(r.iht),
         companies_controlled: String(r.assoc),
         selling: r.sellIn === 0 ? "no plans" : r.sellIn === 2 ? "within 2 years"
                : r.sellIn === 5 ? "2 to 5 years" : "further out",
@@ -886,7 +888,7 @@ window.dpCapture = function (r, profile) {
         h("div", {class:"route"},
           h("h3", null, "Have us do it"),
           h("p", null, "For the parts you cannot do from a screen: the holding company, the share reorganisation, the move abroad, the sale. That is the paid work, and it starts with a call."),
-          h("a", {class:"cta", href:"https://tax4pros.co.uk/apply?utm_source=position&utm_medium=app&utm_campaign=what_now"}, "Apply to work with us")))
+          h("a", {class:"cta", href:"https://tax4pros.co.uk/book?utm_source=position&utm_medium=app&utm_campaign=what_now"}, "Book a free 20 minute call")))
     ]));
     return out;
   }},
@@ -2095,10 +2097,10 @@ window.dpCapture = function (r, profile) {
         h("h3", null, "Keep it live", h("span", {class:"price"}, "£50 a month")),
         h("p", null, "Your position stays in here and moves as your numbers do, with the lessons for the levers actually open to you, in the order they should be pulled, and a re-run the morning after every Budget."))),
       h("div", {class:"step"}, h("div", {class:"idx"}, "04"), h("div", null,
-        h("h3", null, "Book a call to implement", h("span", {class:"price"}, "when you're ready")),
+        h("h3", null, "Talk it through with Sarah", h("span", {class:"price"}, "free, 20 minutes")),
         h("p", null, "To check the app has read your situation correctly, and to do the part it cannot: the holding company, the family investment company, the share reorganisation, the residency move, the sale."),
-        h("p", {class:"gate"}, "Opens once you have taken step 02 or 03. That is deliberate. It keeps the call for people ready to act, and it means you arrive with the diagnosis already done."),
-        h("a", {class:"cta", href:"https://tax4pros.co.uk/apply?utm_source=position&utm_medium=app&utm_campaign=directors_position"}, "Apply to work with us"),
+        h("p", {class:"gate"}, "A phone call, and Sarah rings you. Bring the diagnosis above and you will spend the twenty minutes on what to do about it."),
+        h("a", {class:"cta", href:"https://tax4pros.co.uk/book?utm_source=position&utm_medium=app&utm_campaign=directors_position"}, "Book a free 20 minute call"),
         h("p", {class:"ctanote"}, "Or take the free Director's Pay Sheet first: ",
           h("a", {href:"https://tax4pros.co.uk/pay-sheet?utm_source=position&utm_medium=app&utm_campaign=directors_position", style:"color:var(--accent)"}, "tax4pros.co.uk/pay-sheet"))))
     ])));
