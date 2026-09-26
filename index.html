@@ -561,7 +561,35 @@ window.dpCapture = function (r, profile) {
     return el;
   }
   var $ = function(id){ return document.getElementById(id); };
-  var num = function(id){ var v = parseFloat($(id).value); return isFinite(v) && v > 0 ? v : 0; };
+  var num = function(id){ var v = parseFloat(String($(id).value).replace(/[^0-9.]/g, "")); return isFinite(v) && v > 0 ? v : 0; };
+
+  /* Money boxes show thousands separators (Sarah, 26 Sep 2026: "the numbers input is difficult to
+     read" on a phone). type=number cannot display "850,000", so money inputs become text boxes with
+     the numeric keypad, regrouped on every keystroke; num() above ignores the commas. */
+  function groupDigits(s){
+    var d = String(s).replace(/[^0-9]/g, "");
+    return d ? Number(d).toLocaleString("en-GB") : "";
+  }
+  function moneyify(el){
+    if (el.dataset.money) return;
+    el.dataset.money = "1";
+    el.type = "text";
+    el.setAttribute("inputmode", "numeric");
+    el.setAttribute("autocomplete", "off");
+    el.value = groupDigits(el.value);
+  }
+  function regroup(el){
+    var pos = el.selectionStart || 0;
+    var digitsBefore = el.value.slice(0, pos).replace(/[^0-9]/g, "").length;
+    el.value = groupDigits(el.value);
+    var i = 0, n = 0;
+    while (i < el.value.length && n < digitsBefore){ if (/[0-9]/.test(el.value[i])) n++; i++; }
+    try { el.setSelectionRange(i, i); } catch (e) {}
+  }
+  document.addEventListener("input", function(e){
+    var t = e.target;
+    if (t && t.dataset && t.dataset.money) regroup(t);
+  }, true);
   var on = function(id){ return $(id).checked; };
   var gbp = function(n){ return "£" + Math.round(n).toLocaleString("en-GB"); };
   function gbpShort(n){
@@ -2319,7 +2347,7 @@ window.dpCapture = function (r, profile) {
       var input, live;
       if (f.money || f.num){
         live = $(f.id);
-        input = h("input", {type:"number", id:"ob_" + f.id, step:f.num ? "1" : "1000", min:"0"});
+        input = h("input", {type:f.money ? "text" : "number", id:"ob_" + f.id, step:f.num ? "1" : "1000", min:"0"});
         input.value = live ? live.value : "";
       } else {
         input = h("input", {type:f.type, id:f.id});
@@ -2333,6 +2361,7 @@ window.dpCapture = function (r, profile) {
     var dots = $("obdots");
     dots.textContent = "";
     OB_STEPS.forEach(function(_, i){ dots.appendChild(h("i", {"class":i === obAt ? "on" : ""})); });
+    body.querySelectorAll(".money input").forEach(moneyify);
     $("obback").hidden = obAt === 0;
     $("obnext").textContent = obAt === OB_STEPS.length - 1 ? "See my position" : "Next";
   }
@@ -2443,6 +2472,7 @@ window.dpCapture = function (r, profile) {
   $("obback").addEventListener("click", function(){ if (obAt > 0){ obAt--; renderOnboard(); } });
 
   restore();
+  document.querySelectorAll(".money input").forEach(moneyify);
   if (!PROFILE) startOnboard();
   run();
 })();
